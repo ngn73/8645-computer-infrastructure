@@ -14,4 +14,4 @@ Updates committed:
 |Problem|Notebook|Date Submitted|
 |--------|--------|-----------|
 |1 |Problem 1: Data from yfinance|19/10/2025|
-|2 |Problem 2: Data Data|08/11/2025|
+|2 |Problem 2: Plotting Data|08/11/2025|
