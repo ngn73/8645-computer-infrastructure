@@ -1,0 +1,72 @@
+import configparser
+class app_config:
+    def __init__(self):
+        try:
+            self.config_file = 'app_settings.ini'     #Hardcoded ... should not change!
+            # Create a ConfigParser object
+            self.config = configparser.ConfigParser()
+            # Read the configuration file
+            self.config.read(self.config_file)
+        except FileNotFoundError as e:
+            print(f"Error: Cannot find config file {self.config_file} :{e}")
+        except configparser.ParsingError as e:
+            print(f"Config file {self.config_file} is badly formatted: {e}")
+        except Exception as e:
+            print(f"An unexpected error occurred during loading config file {self.config_file}:", e)
+
+    def getLoggingSettings(self):
+        # Logging values from the configuration file
+        try:
+            logging_active_ini = self.config.getboolean('Logging', 'log_active')
+            logging_active = '1' if (logging_active_ini) else '0'
+            logging_filename = self.config.get('Logging', 'log_filename')
+            logging_level = self.config.get('Logging', 'log_level')
+            logging_format = self.config.get('Logging', 'log_format')
+            logging_settings = {
+                'active': logging_active,
+                'filename': logging_filename,
+                'level': logging_level,
+                'format': logging_format
+                }
+            return logging_settings
+        except configparser.NoSectionError as e:
+            print(f"Missing section in config: {e}")
+        except configparser.NoOptionError as e:
+            print(f"Missing option in config: {e}")
+        except Exception as e:
+            print(f"An unexpected error occurred during loading config Folder section in file: {self.config_file}: {e}")
+
+    def getFolderSettings(self):
+        # Folder path values from the configuration file
+        try:
+            csv_dir = self.config.getboolean('Folders', 'csv_dir')
+            plot_dir = self.config.getboolean('Folders', 'plot_dir')
+            dest_dir = self.config.getboolean('Folders', 'dest_dir')
+            staging_dir = self.config.getboolean('Folders', 'staging_dir')
+            archive_dir = self.config.getboolean('Folders', 'archive_dir')
+            filename_format = self.config.getboolean('Folders', 'filename_format')
+
+            folder_settings = {
+                'csv_dir' : csv_dir,
+                'plot_dir' : plot_dir,
+                'dest_dir' : dest_dir,
+                'staging_dir' : staging_dir,
+                'archive_dir' : archive_dir,
+                'filename_format' : filename_format
+                }
+            return folder_settings
+        except configparser.NoSectionError as e:
+            print(f"Missing section in config: {e}")
+        except configparser.NoOptionError as e:
+            print(f"Missing option in config: {e}")
+        except Exception as e:
+            print(f"An unexpected error occurred during loading config Logging section in file: {self.config_file}: {e}")
+
+
+    def getAllSettings(self):
+        # Return a distionary of dictionaries (with the retrieved values)
+        logging_settings = self.getLoggingSettings()
+        folder_settings = self.getFolderSettings()
+        config_settings = {'logging':logging_settings, 'folder':mysql_settings}
+        return config_settings
+

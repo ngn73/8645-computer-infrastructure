@@ -15,3 +15,4 @@ Updates committed:
 |--------|--------|-----------|
 |1 |Problem 1: Data from yfinance|19/10/2025|
 |2 |Problem 2: Plotting Data|08/11/2025|
+|3 |Problem 3: Script|16/11/2025|
