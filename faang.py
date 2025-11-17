@@ -169,12 +169,12 @@ def plot_data(df_stock:pd.DataFrame):
     plt.show()
 
 def getFAANGData() :
-    faang_config = myConfig.getLoggingSettings()
+    faang_config = myConfig.getStocksSettings()
     faang_tickers = faang_config['tickers']
     faang_period = faang_config['period']
     faang_interval = faang_config['interval']
 
-    my_logger.debug("Starting FAANG data retrieval process.")
+    my_logger.debug(f"Starting FAANG data retrieval process for {faang_tickers} with interval '{faang_interval}' over period '{faang_period}'.")
     archiveData()
     df= extractData(faang_tickers, faang_period, faang_interval)
     if (df.empty == False) :
@@ -196,7 +196,7 @@ archive_dir = myConfig.config.get('Folders', 'archive_dir')
 getFAANGData()
 
 #Read the CSV file
-df_stocks = readCSV(dest_dir)
+#df_stocks = readCSV(dest_dir)
 
 #Plot the data and save as PNG file
 #plot_data(df_stocks)

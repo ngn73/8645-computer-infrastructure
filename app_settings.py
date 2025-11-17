@@ -39,12 +39,12 @@ class app_config:
     def getFolderSettings(self):
         # Folder path values from the configuration file
         try:
-            csv_dir = self.config.getboolean('Folders', 'csv_dir')
-            plot_dir = self.config.getboolean('Folders', 'plot_dir')
-            dest_dir = self.config.getboolean('Folders', 'dest_dir')
-            staging_dir = self.config.getboolean('Folders', 'staging_dir')
-            archive_dir = self.config.getboolean('Folders', 'archive_dir')
-            filename_format = self.config.getboolean('Folders', 'filename_format')
+            csv_dir = self.config.get('Folders', 'csv_dir')
+            plot_dir = self.config.get('Folders', 'plot_dir')
+            dest_dir = self.config.get('Folders', 'dest_dir')
+            staging_dir = self.config.get('Folders', 'staging_dir')
+            archive_dir = self.config.get('Folders', 'archive_dir')
+            filename_format = self.config.get('Folders', 'filename_format')
 
             folder_settings = {
                 'csv_dir' : csv_dir,
@@ -62,11 +62,31 @@ class app_config:
         except Exception as e:
             print(f"An unexpected error occurred during loading config Logging section in file: {self.config_file}: {e}")
 
+    def getStocksSettings(self):
+        # Stock Ticker values from the configuration file
+        try:
+            stock_tickers = self.config.get('Stocks', 'tickers')
+            stock_period = self.config.get('Stocks', 'period')
+            stock_interval = self.config.get('Stocks', 'interval')
+            stock_settings = {
+                'tickers' : stock_tickers,
+                'period' : stock_period,
+                'interval' : stock_interval
+                }
+            return stock_settings
+        except configparser.NoSectionError as e:
+            print(f"Missing section in config: {e}")
+        except configparser.NoOptionError as e:
+            print(f"Missing option in config: {e}")
+        except Exception as e:
+            print(f"An unexpected error occurred during loading config Logging section in file: {self.config_file}: {e}")
+
 
     def getAllSettings(self):
         # Return a distionary of dictionaries (with the retrieved values)
         logging_settings = self.getLoggingSettings()
         folder_settings = self.getFolderSettings()
-        config_settings = {'logging':logging_settings, 'folder':mysql_settings}
+        stock_settings = self.getStocksSettings()
+        config_settings = {'logging':logging_settings, 'folder':folder_settings, 'stock':stock_settings}
         return config_settings
 
