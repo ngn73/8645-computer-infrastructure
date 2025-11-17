@@ -11,8 +11,14 @@ Assessement Details : https://github.com/ianmcloughlin/computer-infrastructure/b
 
 Rather than having complete assessement with a single Notebook (problems.ipynb), the total assessement is broken into several Notebooks, 
 Updates committed:
-|Problem|Notebook|Date Submitted|
-|--------|--------|-----------|
-|1 |Problem 1: Data from yfinance|19/10/2025|
-|2 |Problem 2: Plotting Data|08/11/2025|
-|3 |Problem 3: Script|16/11/2025|
+|Problem|Notebook|Date Submitted|Link|
+|--------|--------|-----------|-----------|
+|1 |Problem 1: Data from yfinance|19/10/2025|[Problem 1 NoteBook : Data from yfinance](problem_1.ipynb)|
+|2 |Problem 2: Plotting Data|08/11/2025|[Problem 2 NoteBook :Plotting Data](problem_2.ipynb)|
+|3 |Problem 3: Script|16/11/2025|[Problem 3 NoteBook : Script](problem_3.ipynb)|   
+  
+*Additional Project Files (non-jupyter):*   
+[Main Python Script : faang.py](faang.py)  
+[Python Config Parser Utility Script : app_settings.py](app_settings.py)  
+[Config File : app_settings.ini](app_settings.ini)  
+
