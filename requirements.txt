@@ -1,5 +1,17 @@
+# ======================================================
+#   Built-in libraries (no installation needed):
+#
+#   shutil - File operations
+#   logging - Logging functionality
+#   glob - File pattern matching
+#   datetime - Date/time handling
+#   os - Operating system interface
+#   configparser - Configuration file parsing
+# ======================================================
+
+# external libraries (installation needed):
 yfinance
-pandas
+requests
 matplotlib
-numpy
-ipython
+pandas
+
