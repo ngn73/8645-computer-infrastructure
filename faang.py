@@ -168,12 +168,7 @@ def plot_data(df_stock:pd.DataFrame):
     plt.savefig(plot_filepath, dpi=300, bbox_inches='tight')
     plt.show()
 
-def getFAANGData() :
-    faang_config = myConfig.getStocksSettings()
-    faang_tickers = faang_config['tickers']
-    faang_period = faang_config['period']
-    faang_interval = faang_config['interval']
-
+def getFAANGData(faang_tickers, faang_period, faang_interval) 
     my_logger.debug(f"Starting FAANG data retrieval process for {faang_tickers} with interval '{faang_interval}' over period '{faang_period}'.")
     archiveData()
     df= extractData(faang_tickers, faang_period, faang_interval)
@@ -188,12 +183,19 @@ myConfig = app_config()
 my_logger = init_Logging()
 
 #Get folders from config
-dest_dir = myConfig.config.get('Folders', 'dest_dir')
-staging_dir = myConfig.config.get('Folders', 'staging_dir')
-archive_dir = myConfig.config.get('Folders', 'archive_dir')
+folder_config = myConfig.getFolderSettings()
+dest_dir =  folder_config['dest_dir']
+staging_dir = folder_config['staging_dir']
+archive_dir = folder_config['archive_dir']
 
 #Download FAANG data from yFinance and Save to CSV file
-getFAANGData()
+faang_config = myConfig.getStocksSettings()
+faang_tickers = faang_config['tickers']
+faang_period = faang_config['period']
+faang_interval = faang_config['interval']
+
+#Download FAANG data from yFinance and Save to CSV file
+getFAANGData(faang_tickers, faang_period, faang_interval)
 
 #Read the CSV file
 #df_stocks = readCSV(dest_dir)

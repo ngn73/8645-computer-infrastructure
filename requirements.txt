@@ -10,8 +10,11 @@
 # ======================================================
 
 # external libraries (installation needed):
+ipython
 yfinance
 requests
 matplotlib
+seaborn
 pandas
-
+numpy
+scipy
