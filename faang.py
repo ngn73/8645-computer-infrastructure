@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 '''
 Author:Niall Naughton
 Date:16/11/2025
@@ -16,7 +18,6 @@ Beside standard libraries (listed in requirements.txt), this script also require
 import yfinance as yf
 import shutil
 from requests.exceptions import HTTPError, ConnectionError, Timeout
-import logging as logger
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import pandas as pd
@@ -24,6 +25,7 @@ import glob
 from datetime import datetime
 import os
 from app_settings import app_config
+import app_logger as logger
 
 def init_Logging():
     #Get Logging Settings
@@ -68,9 +70,9 @@ def archiveData() :
         # Move file
         if os.path.exists(source_path):
             shutil.move(source_path, archive_path)
-            my_logger.debug(f"Archived: {file} to {archive_path}")
+            my_logger.logDebugMessage(f"Archived: {file} to {archive_path}")
         else:
-            my_logger.debug(f"File not found: {source_path}") 
+            my_logger.logDebugMessage(f"File not found: {source_path}") 
 
 
 def extractData(_tickers, _period, _interval, _retries=3) :
@@ -83,30 +85,30 @@ def extractData(_tickers, _period, _interval, _retries=3) :
                 raise ValueError("Downloaded data is empty.")
             if faang_df.isnull().values.any():
                 raise ValueError("Downloaded data contains NaN values.")
-            my_logger.debug("yFinance Data extraction successful.")
+            my_logger.logDebugMessage("yFinance Data extraction successful.")
             return faang_df
         
         except HTTPError as e:
-            my_logger.error(f"HTTP Error (attempt {attempt + 1}/{_retries}): {e}")
+            my_logger.logErrorMessage(f"HTTP Error (attempt {attempt + 1}/{_retries}): {e}")
             if attempt == _retries - 1:
                 raise
                 
         except ConnectionError as e:
-            my_logger.error(f"Connection Error (attempt {attempt + 1}/{_retries}): {e}")
+            my_logger.logErrorMessage(f"Connection Error (attempt {attempt + 1}/{_retries}): {e}")
             if attempt == _retries - 1:
                 raise
                 
         except Timeout as e:
-            my_logger.error(f"Timeout Error (attempt {attempt + 1}/{_retries}): {e}")
+            my_logger.logErrorMessage(f"Timeout Error (attempt {attempt + 1}/{_retries}): {e}")
             if attempt == _retries - 1:
                 raise
                 
         except ValueError as e:
-            my_logger.error(f"Validation Error: {e}")
+            my_logger.logErrorMessage(f"Validation Error: {e}")
             return pd.DataFrame()  # Return empty DataFrame
         
         except Exception as e:
-            my_logger.error(f"Unexpected error: {type(e).__name__}: {e}")
+            my_logger.logErrorMessage(f"Unexpected error: {type(e).__name__}: {e}")
             return pd.DataFrame()   # Return empty DataFrame
 
         return pd.DataFrame()   # Return empty DataFrame
@@ -129,18 +131,18 @@ def saveData(df) :
 
         # Verify file was created
         if os.path.exists(staging_data_filepath):
-            my_logger.debug(f"yFinance CSV File {filename} generated in Staging folder.")
+            my_logger.logDebugMessage(f"yFinance CSV File {filename} generated in Staging folder.")
             #archive previous file/s
             archiveData()
             #Move from staging to destination
             shutil.move(staging_data_filepath, dest_data_filepath)
-            my_logger.debug(f"yFinance CSV File {filename} moved to data folder.")
+            my_logger.logDebugMessage(f"yFinance CSV File {filename} moved to data folder.")
             return staging_data_filepath
         else:
-            my_logger.debug("yFinance CSV File not generated in Staging folder.")
+            my_logger.logDebugMessage("yFinance CSV File not generated in Staging folder.")
             return None
     except Exception as e:
-        my_logger.error(f"Unexpected error saving data: {type(e).__name__}: {e}")
+        my_logger.logErrorMessage(f"Unexpected error saving data: {type(e).__name__}: {e}")
         return None
 
 
@@ -168,19 +170,19 @@ def plot_data(df_stock:pd.DataFrame):
     plt.savefig(plot_filepath, dpi=300, bbox_inches='tight')
     plt.show()
 
-def getFAANGData(faang_tickers, faang_period, faang_interval) 
-    my_logger.debug(f"Starting FAANG data retrieval process for {faang_tickers} with interval '{faang_interval}' over period '{faang_period}'.")
+def getFAANGData(faang_tickers, faang_period, faang_interval) :
+    my_logger.logDebugMessage(f"Starting FAANG data retrieval process for {faang_tickers} with interval '{faang_interval}' over period '{faang_period}'.")
     archiveData()
     df= extractData(faang_tickers, faang_period, faang_interval)
     if (df.empty == False) :
         saveData(df)
-    my_logger.debug("FAANG data retrieval process completed.")
+    my_logger.logDebugMessage("FAANG data retrieval process completed.")
 
 # Setup Config Settings
 myConfig = app_config()
 
 #Setup Logging
-my_logger = init_Logging()
+my_logger = logger.app_logger(__name__)
 
 #Get folders from config
 folder_config = myConfig.getFolderSettings()

@@ -2,7 +2,7 @@ import configparser
 class app_config:
     def __init__(self):
         try:
-            self.config_file = 'app_settings.ini'     #Hardcoded ... should not change!
+            self.config_file = './app_settings.ini'     #Hardcoded ... should not change!
             # Create a ConfigParser object
             self.config = configparser.ConfigParser()
             # Read the configuration file
@@ -17,9 +17,9 @@ class app_config:
     def getLoggingSettings(self):
         # Logging values from the configuration file
         try:
-            logging_active_ini = self.config.getboolean('Logging', 'log_active')
-            logging_active = '1' if (logging_active_ini) else '0'
-            logging_filename = self.config.get('Logging', 'log_filename')
+            #logging_active_ini = self.config.getboolean('Logging', 'log_active')
+            logging_active = self.config.get('Logging', 'log_active')
+            logging_filename = self.config.get('Logging', 'log_filename') 
             logging_level = self.config.get('Logging', 'log_level')
             logging_format = self.config.get('Logging', 'log_format')
             logging_settings = {
