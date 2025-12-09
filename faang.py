@@ -24,6 +24,7 @@ import pandas as pd
 import glob
 from datetime import datetime
 import os
+from pathlib import Path
 from app_settings import app_config
 import app_logger as logger
 
@@ -114,6 +115,7 @@ def extractData(_tickers, _period, _interval, _retries=3) :
         return pd.DataFrame()   # Return empty DataFrame
 
 def readCSV(file_path:str):
+        base_filename = ''
         try:
             cvs_filepath = os.path.join(file_path, "*.csv" )
             matches = glob.glob(cvs_filepath)
@@ -134,11 +136,13 @@ def readCSV(file_path:str):
                 raise ValueError(f"Failed to read CSV file '{csv_file}': {e}")
                 df = None
 
-            return df
+            base_filename = Path(csv_file).stem
         except Exception as e:
             # Catch-all to report any unexpected issue
             my_logger.logErrorMessage(f"Error in readCSV(): {e}")
-            return None
+            df = None
+        
+        return df, base_filename  #Return filename of csv file (to be used in image filename)
 
 
 def saveData(df) :    
@@ -166,10 +170,10 @@ def saveData(df) :
         return None
 
 
-def plot_data(df_stock:pd.DataFrame):
+def plot_data(df_stock:pd.DataFrame, filename:str):
   
-    filename = datetime.now().strftime("%Y%m%d-%H%M%S") + ".png"
-    plot_filepath = os.path.join(plot_dir, filename )
+    png_filename = filename + ".png"
+    plot_filepath = os.path.join(plot_dir, png_filename )
 
     try:
         df_stock = df_stock.sort_index(axis=1)
@@ -266,11 +270,11 @@ getFAANGData(faang_tickers, faang_period, faang_interval)
 print(f"yFinance data extracted for {faang_tickers} and saved to CSV file to {dest_dir}")
 
 #Read the CSV file
-df_csv = df_stocks = readCSV(dest_dir)
+df_csv, filename = readCSV(dest_dir)
 if(df_csv.empty == False):
     print(f"Successfully read csv file")
     #Plot the data and save as PNG file
-    if(plot_data(df_stocks)):
+    if(plot_data(df_csv, filename)):
         print(f"Successfully saved plot to png file")
     else:
         print(f"SuccessFailed to save plot to png file (review log file)")
