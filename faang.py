@@ -272,11 +272,11 @@ print(f"yFinance data extracted for {faang_tickers} and saved to CSV file to {de
 #Read the CSV file
 df_csv, filename = readCSV(dest_dir)
 if(df_csv.empty == False):
-    print(f"Successfully read csv file")
-    #Plot the data and save as PNG file
+    print(f"Successfully read csv file {filename + ".csv"}")
+    #Plot the data and save as PNG file with same filename
     if(plot_data(df_csv, filename)):
-        print(f"Successfully saved plot to png file")
+        print(f"Successfully saved plot to png file : {filename + ".png"}")
     else:
-        print(f"SuccessFailed to save plot to png file (review log file)")
+        print(f"Failed to save plot to png file : {filename + ".png"} (review log file)")
 else:
     print(f"Failed to read csv file (review log file)")
