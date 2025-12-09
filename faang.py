@@ -114,11 +114,31 @@ def extractData(_tickers, _period, _interval, _retries=3) :
         return pd.DataFrame()   # Return empty DataFrame
 
 def readCSV(file_path:str):
-    cvs_filepath = os.path.join(file_path, "*.csv" )
-    csv_file = glob.glob(cvs_filepath)[0]
-    # Read the CSV file with 3 Headers
-    df = pd.read_csv(csv_file, header=[0, 1, 2], index_col=0)
-    return df
+        try:
+            cvs_filepath = os.path.join(file_path, "*.csv" )
+            matches = glob.glob(cvs_filepath)
+
+            # No CSV files found
+            if not matches:
+                raise FileNotFoundError(f"No CSV files found in directory: {file_path}")
+
+            # Use the first matched CSV file
+            csv_file = matches[0]
+            
+            # Read the CSV file with 3 Headers
+            # Attempt to read CSV
+            try:
+                df = pd.read_csv(csv_file, header=[0, 1, 2], index_col=0)
+                my_logger.logDebugMessage(F"Successfully read the CSV file {csv_file}")
+            except Exception as e:
+                raise ValueError(f"Failed to read CSV file '{csv_file}': {e}")
+                df = None
+
+            return df
+        except Exception as e:
+            # Catch-all to report any unexpected issue
+            my_logger.logErrorMessage(f"Error in readCSV(): {e}")
+            return None
 
 
 def saveData(df) :    
@@ -147,34 +167,78 @@ def saveData(df) :
 
 
 def plot_data(df_stock:pd.DataFrame):
+  
     filename = datetime.now().strftime("%Y%m%d-%H%M%S") + ".png"
     plot_filepath = os.path.join(plot_dir, filename )
 
-    plt.figure(figsize=(10,5))
-    for stock in ['META', 'AAPL', 'AMZN', 'NFLX', 'GOOG']:
-        plt.plot(df_stock.index, df_stock[(stock,'Close')], marker='o', label=stock)
-    plt.title('Stock Hourly Closing Price (Past 5 days)')
-    plt.xlabel('Date')
-    plt.ylabel('Close Price')
-    plt.grid(True)
-    plt.legend()
+    try:
+        df_stock = df_stock.sort_index(axis=1)
 
-    # Format the x-axis dates
-    ax = plt.gca()
-    ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
-    ax.xaxis.set_major_locator(mdates.MonthLocator(interval=1))  # Show every month
-    plt.xticks(rotation=45)
+        plt.figure(figsize=(10,5))
+        for stock in ['META', 'AAPL', 'AMZN', 'NFLX', 'GOOG']:
+            try:
+                plt.plot(
+                    df_stock.index,
+                    df_stock[(stock, 'Close')],
+                    marker='o',
+                    label=stock
+                )
+            except KeyError as e:
+                my_logger.logWarningMessage(f"Stock {stock} missing in dataframe: {e}")
+            except Exception as e:
+                my_logger.logErrorMessage(f"Unexpected error plotting {stock}: {e}")
 
-    plt.tight_layout()
-    # Save the figure before showing it
-    plt.savefig(plot_filepath, dpi=300, bbox_inches='tight')
-    plt.show()
+        plt.title('Stock Hourly Closing Price (Past 5 days)')
+        plt.xlabel('Date')
+        plt.ylabel('Close Price')
+        plt.grid(True)
+        plt.legend()
+
+        # Format the x-axis dates
+        ax = plt.gca()
+        ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
+        ax.xaxis.set_major_locator(mdates.MonthLocator(interval=1))  # Show every month
+        plt.xticks(rotation=45)
+
+        plt.tight_layout()
+
+        my_logger.logDebugMessage(f"Plot generated from CSV file.")
+    except Exception as e:
+        my_logger.logErrorMessage(
+            f"Error generating plot: {e}",
+            exc_info=True  # <-- this logs full traceback
+        )
+        plt.close()
+        return False
+    
+# Saving the output file
+    try:
+        plt.savefig(plot_filepath, dpi=300, bbox_inches='tight')
+        my_logger.logInfoMessage(f"Plot saved to file {plot_filepath}")
+    except Exception as e:
+        my_logger.logErrorMessage(
+            f"Error saving plot to {plot_filepath}: {e}",
+            exc_info=True
+        )
+        plt.close()
+        return False
+
+    # Show the plot
+    try:
+        plt.show()
+    except Exception as e:
+        my_logger.logWarningMessage(f"Error displaying plot: {e}")
+
+    plt.close()
+    return True
+
 
 def getFAANGData(faang_tickers, faang_period, faang_interval) :
     my_logger.logDebugMessage(f"Starting FAANG data retrieval process for {faang_tickers} with interval '{faang_interval}' over period '{faang_period}'.")
-    archiveData()
+    
     df= extractData(faang_tickers, faang_period, faang_interval)
     if (df.empty == False) :
+        #Generate a file in Staging folder, and archive old csv
         saveData(df)
     my_logger.logDebugMessage("FAANG data retrieval process completed.")
 
@@ -189,6 +253,7 @@ folder_config = myConfig.getFolderSettings()
 dest_dir =  folder_config['dest_dir']
 staging_dir = folder_config['staging_dir']
 archive_dir = folder_config['archive_dir']
+plot_dir = folder_config['plot_dir']
 
 #Download FAANG data from yFinance and Save to CSV file
 faang_config = myConfig.getStocksSettings()
@@ -198,9 +263,16 @@ faang_interval = faang_config['interval']
 
 #Download FAANG data from yFinance and Save to CSV file
 getFAANGData(faang_tickers, faang_period, faang_interval)
+print(f"yFinance data extracted for {faang_tickers} and saved to CSV file to {dest_dir}")
 
 #Read the CSV file
-#df_stocks = readCSV(dest_dir)
-
-#Plot the data and save as PNG file
-#plot_data(df_stocks)
+df_csv = df_stocks = readCSV(dest_dir)
+if(df_csv.empty == False):
+    print(f"Successfully read csv file")
+    #Plot the data and save as PNG file
+    if(plot_data(df_stocks)):
+        print(f"Successfully saved plot to png file")
+    else:
+        print(f"SuccessFailed to save plot to png file (review log file)")
+else:
+    print(f"Failed to read csv file (review log file)")

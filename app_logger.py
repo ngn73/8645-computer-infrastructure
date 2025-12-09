@@ -1,4 +1,5 @@
 import logging as logger
+import re
 from app_settings import app_config
 
 class app_logger:
@@ -11,6 +12,7 @@ class app_logger:
         logging_filename = logging_config['filename']
         logging_level = logging_config['level']
         logging_format = logging_config['format']
+        logging_silence_list = logging_config['silence_list']
         if(logging_level == 'DEBUG'):
             log_level=logger.DEBUG
         elif(logging_level == 'INFO'):
@@ -30,10 +32,12 @@ class app_logger:
             logger.basicConfig(format=logging_format, filename=logging_filename, encoding='utf-8', level=log_level)
 
             self.logger = logger.getLogger(__name__)
-            #suppress logging from yfinance module
-            logger.getLogger('yfinance').setLevel(logger.WARNING)
-            logger.getLogger('peewee').setLevel(logger.WARNING)
-            logger.getLogger('urllib3').setLevel(logger.WARNING)
+
+            #suppress logging from other module
+            silenced_modules = [x.strip() for x in re.split(r",\s*", logging_silence_list)]
+            for silenced_module in silenced_modules:
+                logger.getLogger(silenced_module).setLevel(logger.WARNING)
+            
         else:
             logger.disable()
         

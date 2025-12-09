@@ -22,11 +22,13 @@ class app_config:
             logging_filename = self.config.get('Logging', 'log_filename') 
             logging_level = self.config.get('Logging', 'log_level')
             logging_format = self.config.get('Logging', 'log_format')
+            logging_silence_list = self.config.get('Logging', 'log_silence_list')
             logging_settings = {
                 'active': logging_active,
                 'filename': logging_filename,
                 'level': logging_level,
-                'format': logging_format
+                'format': logging_format,
+                'silence_list': logging_silence_list
                 }
             return logging_settings
         except configparser.NoSectionError as e:
