@@ -1,0 +1,44 @@
+name: Download and Plot FAANG Data
+
+on:
+  schedule:
+    - cron: "0 16 * * *"   # daily @16:00 UTC (optional)
+  workflow_dispatch:        # manual start button
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Check out your repository
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      # 2. Set up Python
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'   # my version
+
+      # 3. Install dependencies (if you have requirements.txt)
+      - name: Install dependencies
+        run: |
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          fi
+
+      # 4. Run your script
+      - name: Run Python Script
+        run: python faang.py
+
+      # 5. Upload logs, CSVs and images as artifacts
+      #    (modify paths as needed)
+      - name: Upload output artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: script-output
+          path: |
+            data/archive/*.csv
+            logs/*.log
+            data/plots/*.png
+          if-no-files-found: warn
