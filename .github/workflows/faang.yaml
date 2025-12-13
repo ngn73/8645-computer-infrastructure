@@ -35,7 +35,7 @@ jobs:
         run: |
           pwd
           find . -type f
-          
+
       # 5. Upload logs, CSVs and images as artifacts
       #    (modify paths as needed)
       - name: Upload output artifacts
@@ -46,5 +46,6 @@ jobs:
             data/archive/*.csv
             logs/*.log
             data/plots/*.png
+            data/*.csv
           if-no-files-found: warn
 
