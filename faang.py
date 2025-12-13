@@ -150,12 +150,14 @@ def saveData(df) :
         filename = datetime.now().strftime("%Y%m%d-%H%M%S") + ".csv"
         staging_data_filepath = os.path.join(staging_dir, filename )
         dest_data_filepath = os.path.join(dest_dir, filename )
+        print(f"staging_data_filepath = {staging_data_filepath}")
         df.to_csv(staging_data_filepath)
         
 
         # Verify file was created
         if os.path.exists(staging_data_filepath):
             my_logger.logDebugMessage(f"yFinance CSV File {filename} generated in Staging folder.")
+            print(f"{staging_data_filepath} exists and is about to archive")
             #archive previous file/s
             archiveData()
             #Move from staging to destination
@@ -164,6 +166,7 @@ def saveData(df) :
             return staging_data_filepath
         else:
             my_logger.logDebugMessage("yFinance CSV File not generated in Staging folder.")
+            print("file was not created")
             return None
     except Exception as e:
         my_logger.logErrorMessage(f"Unexpected error saving data: {type(e).__name__}: {e}")
