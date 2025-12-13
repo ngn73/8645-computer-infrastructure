@@ -175,6 +175,11 @@ def plot_data(df_stock:pd.DataFrame, filename:str):
     png_filename = filename + ".png"
     plot_filepath = os.path.join(plot_dir, png_filename )
 
+    df_stock.index = pd.to_datetime(df_stock.index)
+    df_stock.index.name = 'Datetime'
+
+    #print(df_stock.head(10))
+
     try:
         df_stock = df_stock.sort_index(axis=1)
 
@@ -200,9 +205,9 @@ def plot_data(df_stock:pd.DataFrame, filename:str):
 
         # Format the x-axis dates
         ax = plt.gca()
-        ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
-        ax.xaxis.set_major_locator(mdates.MonthLocator(interval=1))  # Show every month
-        plt.xticks(rotation=45)
+        ax.xaxis.set_major_locator(mdates.DayLocator())
+        ax.xaxis.set_major_formatter(mdates.DateFormatter('%b-%d-%Y'))
+        #plt.xticks(rotation=45)
 
         plt.tight_layout()
 
