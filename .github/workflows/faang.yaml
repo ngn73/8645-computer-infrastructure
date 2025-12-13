@@ -31,6 +31,11 @@ jobs:
       - name: Run Python Script
         run: python faang.py
 
+      - name: Show files
+        run: |
+          pwd
+          find . -type f
+          
       # 5. Upload logs, CSVs and images as artifacts
       #    (modify paths as needed)
       - name: Upload output artifacts
@@ -42,3 +47,4 @@ jobs:
             logs/*.log
             data/plots/*.png
           if-no-files-found: warn
+

@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 '''
 Author:Niall Naughton
@@ -250,6 +250,13 @@ def getFAANGData(faang_tickers, faang_period, faang_interval) :
         #Generate a file in Staging folder, and archive old csv
         saveData(df)
     my_logger.logDebugMessage("FAANG data retrieval process completed.")
+
+#initially create folders
+
+Path("logs").mkdir(parents=True, exist_ok=True)
+Path("data/archive").mkdir(parents=True, exist_ok=True)
+Path("data/plots").mkdir(parents=True, exist_ok=True)
+Path("data/staging").mkdir(parents=True, exist_ok=True)
 
 # Setup Config Settings
 myConfig = app_config()
