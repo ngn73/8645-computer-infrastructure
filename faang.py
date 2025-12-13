@@ -81,7 +81,7 @@ def extractData(_tickers, _period, _interval, _retries=3) :
     for attempt in range(_retries):
         try:
             faang_df = yf.download(_tickers, period=_period, interval=_interval, group_by="ticker", auto_adjust=True)
-
+            print("Downloaded DF shape:", faang_df.shape)
             if faang_df.empty:
                 raise ValueError("Downloaded data is empty.")
             if faang_df.isnull().values.any():
