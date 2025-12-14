@@ -19,13 +19,13 @@ class app_config:
         try:
             #logging_active_ini = self.config.getboolean('Logging', 'log_active')
             logging_active = self.config.get('Logging', 'log_active')
-            logging_filename = self.config.get('Logging', 'log_filename') 
+            logging_path = self.config.get('Logging', 'log_path') 
             logging_level = self.config.get('Logging', 'log_level')
             logging_format = self.config.get('Logging', 'log_format')
             logging_silence_list = self.config.get('Logging', 'log_silence_list')
             logging_settings = {
                 'active': logging_active,
-                'filename': logging_filename,
+                'path': logging_path,
                 'level': logging_level,
                 'format': logging_format,
                 'silence_list': logging_silence_list

@@ -75,7 +75,6 @@ def archiveData() :
         else:
             my_logger.logDebugMessage(f"File not found: {source_path}") 
 
-
 def extractData(_tickers, _period, _interval, _retries=3) :
     # Download last 5 days of hourly data for Meta, Apple, Amazon, Netflix, Google stocks
     for attempt in range(_retries):
@@ -144,25 +143,24 @@ def readCSV(file_path:str):
         
         return df, base_filename  #Return filename of csv file (to be used in image filename)
 
-
-def saveData(df) :    
+def saveData(df:pd.DataFrame, filename:str) :    
     try:
-        filename = datetime.now().strftime("%Y%m%d-%H%M%S") + ".csv"
-        staging_data_filepath = os.path.join(staging_dir, filename )
-        dest_data_filepath = os.path.join(dest_dir, filename )
+        csv_file =  filename + ".csv"
+        staging_data_filepath = os.path.join(staging_dir, csv_file )
+        dest_data_filepath = os.path.join(dest_dir, csv_file )
         print(f"staging_data_filepath = {staging_data_filepath}")
         df.to_csv(staging_data_filepath)
         
 
         # Verify file was created
         if os.path.exists(staging_data_filepath):
-            my_logger.logDebugMessage(f"yFinance CSV File {filename} generated in Staging folder.")
+            my_logger.logDebugMessage(f"yFinance CSV File {csv_file} generated in Staging folder.")
             print(f"{staging_data_filepath} exists and is about to archive")
             #archive previous file/s
             archiveData()
             #Move from staging to destination
             shutil.move(staging_data_filepath, dest_data_filepath)
-            my_logger.logDebugMessage(f"yFinance CSV File {filename} moved to data folder.")
+            my_logger.logDebugMessage(f"yFinance CSV File {csv_file} moved to data folder.")
             return staging_data_filepath
         else:
             my_logger.logDebugMessage("yFinance CSV File not generated in Staging folder.")
@@ -171,7 +169,6 @@ def saveData(df) :
     except Exception as e:
         my_logger.logErrorMessage(f"Unexpected error saving data: {type(e).__name__}: {e}")
         return None
-
 
 def plot_data(df_stock:pd.DataFrame, filename:str):
   
@@ -244,14 +241,13 @@ def plot_data(df_stock:pd.DataFrame, filename:str):
     plt.close()
     return True
 
-
-def getFAANGData(faang_tickers, faang_period, faang_interval) :
+def getFAANGData(faang_tickers, faang_period, faang_interval, filename:str) :
     my_logger.logDebugMessage(f"Starting FAANG data retrieval process for {faang_tickers} with interval '{faang_interval}' over period '{faang_period}'.")
     
     df= extractData(faang_tickers, faang_period, faang_interval)
     if (df.empty == False) :
         #Generate a file in Staging folder, and archive old csv
-        saveData(df)
+        saveData(df, filename)
     my_logger.logDebugMessage("FAANG data retrieval process completed.")
 
 #initially create folders
@@ -261,11 +257,14 @@ Path("data/archive").mkdir(parents=True, exist_ok=True)
 Path("data/plots").mkdir(parents=True, exist_ok=True)
 Path("data/staging").mkdir(parents=True, exist_ok=True)
 
+#get base filename for csv, png, and log files
+basefilename = datetime.now().strftime("%Y%m%d-%H%M%S")
+
 # Setup Config Settings
 myConfig = app_config()
 
 #Setup Logging
-my_logger = logger.app_logger(__name__)
+my_logger = logger.app_logger(__name__, basefilename)
 
 #Get folders from config
 folder_config = myConfig.getFolderSettings()
@@ -281,7 +280,7 @@ faang_period = faang_config['period']
 faang_interval = faang_config['interval']
 
 #Download FAANG data from yFinance and Save to CSV file
-getFAANGData(faang_tickers, faang_period, faang_interval)
+getFAANGData(faang_tickers, faang_period, faang_interval, basefilename)
 print(f"yFinance data extracted for {faang_tickers} and saved to CSV file to {dest_dir}")
 
 #Read the CSV file

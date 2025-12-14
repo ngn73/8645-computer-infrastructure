@@ -1,15 +1,17 @@
 import logging as logger
 import re
+import os
 from app_settings import app_config
 
 class app_logger:
     
-    def __init__(self, loggername:str):
+    def __init__(self, loggername:str, basefilename:str):
+        filename = basefilename + '.log'
         myConfig = app_config()
         #Get Logging Settings
         logging_config = myConfig.getLoggingSettings()
         logging_active = logging_config['active']
-        logging_filename = logging_config['filename']
+        logging_path = logging_config['path']
         logging_level = logging_config['level']
         logging_format = logging_config['format']
         logging_silence_list = logging_config['silence_list']
@@ -29,9 +31,10 @@ class app_logger:
         self.logger = None
         if(logging_active == '1'):  #Return None if not active
             #configure logger
-            logger.basicConfig(format=logging_format, filename=logging_filename, encoding='utf-8', level=log_level)
+            filepath = source_path = os.path.join(logging_path, filename)
+            logger.basicConfig(format=logging_format, filename=filepath, encoding='utf-8', level=log_level)
 
-            self.logger = logger.getLogger(__name__)
+            self.logger = logger.getLogger(loggername)
 
             #suppress logging from other module
             silenced_modules = [x.strip() for x in re.split(r",\s*", logging_silence_list)]
