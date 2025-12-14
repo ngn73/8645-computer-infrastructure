@@ -43,7 +43,6 @@ jobs:
         with:
           name: script-output
           path: |
-            data/archive/*.csv
             logs/*.log
             data/plots/*.png
             data/*.csv

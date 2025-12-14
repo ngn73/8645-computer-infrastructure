@@ -5,14 +5,18 @@ Author:Niall Naughton
 Date:16/11/2025
 Description:
 Script migrated initially from Jupyter Notebook
-* Downloads the Ticker data for 'META', 'AAPL', 'AMZN', 'NFLX', 'GOOG' with yFinance library
+* Downloads the Ticker data for 'META', 'AAPL', 'AMZN', 'NFLX', 'GOOG' with yFinance library (or whatever stocks configured)
 * Saves the data to a timestamped CSV file with MultiIndex Headers
-* Generates a line plot of hourly Close prices over the past 5 days
+* Generates a line plot of hourly Close prices over the past 5 days (or whatever time periods configured)
 * Saves the plot as a PNG file with a timestamped filename
 
 Dependencies:
 Beside standard libraries (listed in requirements.txt), this script also requires the following custom libraries:
 * app_settings (defined in app_settings.py) for configuration management
+* app_logger (defined in app_logger.py) for logging management
+
+Configuration:
+This script is configured with a collection of settings within an ini file (app_setting.ini)
 '''
 
 import yfinance as yf
@@ -28,6 +32,7 @@ from pathlib import Path
 from app_settings import app_config
 import app_logger as logger
 
+#Read all config settings
 def init_Logging():
     #Get Logging Settings
     logging_config = myConfig.getLoggingSettings()
@@ -60,6 +65,7 @@ def init_Logging():
         logger.getLogger('urllib3').setLevel(logger.WARNING)
     return self_logger
 
+#Archive the all CVS files in root 'data' folder and move to 'archive' folder
 def archiveData() :
     #Get list of CSV files in source directory
     csv_files = [f for f in os.listdir(dest_dir) if f.lower().endswith('.csv')]
@@ -75,8 +81,9 @@ def archiveData() :
         else:
             my_logger.logDebugMessage(f"File not found: {source_path}") 
 
+# Download last 5 days of hourly data for Meta, Apple, Amazon, Netflix, Google stocks
 def extractData(_tickers, _period, _interval, _retries=3) :
-    # Download last 5 days of hourly data for Meta, Apple, Amazon, Netflix, Google stocks
+    
     for attempt in range(_retries):
         try:
             faang_df = yf.download(_tickers, period=_period, interval=_interval, group_by="ticker", auto_adjust=True)
@@ -113,6 +120,7 @@ def extractData(_tickers, _period, _interval, _retries=3) :
 
         return pd.DataFrame()   # Return empty DataFrame
 
+#Read a CSV file and return a Dataframe
 def readCSV(file_path:str):
         base_filename = ''
         try:
@@ -143,9 +151,10 @@ def readCSV(file_path:str):
         
         return df, base_filename  #Return filename of csv file (to be used in image filename)
 
-def saveData(df:pd.DataFrame, filename:str) :    
+#Save Dataframe of FAANG data into a CSV file
+def saveData(df:pd.DataFrame, csvfilename:str) :    
     try:
-        csv_file =  filename + ".csv"
+        csv_file =  csvfilename
         staging_data_filepath = os.path.join(staging_dir, csv_file )
         dest_data_filepath = os.path.join(dest_dir, csv_file )
         print(f"staging_data_filepath = {staging_data_filepath}")
@@ -170,6 +179,7 @@ def saveData(df:pd.DataFrame, filename:str) :
         my_logger.logErrorMessage(f"Unexpected error saving data: {type(e).__name__}: {e}")
         return None
 
+#Plot a lineplot of FAANG data, nd save as a PNG image file
 def plot_data(df_stock:pd.DataFrame, filename:str):
   
     png_filename = filename + ".png"
@@ -241,6 +251,7 @@ def plot_data(df_stock:pd.DataFrame, filename:str):
     plt.close()
     return True
 
+#Download FAANG data from yFinance and save to a CSV file
 def getFAANGData(faang_tickers, faang_period, faang_interval, filename:str) :
     my_logger.logDebugMessage(f"Starting FAANG data retrieval process for {faang_tickers} with interval '{faang_interval}' over period '{faang_period}'.")
     
@@ -251,7 +262,6 @@ def getFAANGData(faang_tickers, faang_period, faang_interval, filename:str) :
     my_logger.logDebugMessage("FAANG data retrieval process completed.")
 
 #initially create folders
-
 Path("logs").mkdir(parents=True, exist_ok=True)
 Path("data/archive").mkdir(parents=True, exist_ok=True)
 Path("data/plots").mkdir(parents=True, exist_ok=True)
@@ -273,21 +283,22 @@ staging_dir = folder_config['staging_dir']
 archive_dir = folder_config['archive_dir']
 plot_dir = folder_config['plot_dir']
 
-#Download FAANG data from yFinance and Save to CSV file
+#get Stock settings from config
 faang_config = myConfig.getStocksSettings()
 faang_tickers = faang_config['tickers']
 faang_period = faang_config['period']
 faang_interval = faang_config['interval']
 
 #Download FAANG data from yFinance and Save to CSV file
-getFAANGData(faang_tickers, faang_period, faang_interval, basefilename)
-print(f"yFinance data extracted for {faang_tickers} and saved to CSV file to {dest_dir}")
+csv_filename = basefilename + ".csv"
+getFAANGData(faang_tickers, faang_period, faang_interval, csv_filename)
+print(f"yFinance data extracted for {faang_tickers} and saved to CSV file :{csv_filename} to folder {dest_dir}")
 
 #Read the CSV file
 df_csv, filename = readCSV(dest_dir)
 if(df_csv.empty == False):
     print(f"Successfully read csv file {filename + ".csv"}")
-    #Plot the data and save as PNG file with same filename
+    #Plot the data and save as PNG file with same filename as csv
     if(plot_data(df_csv, filename)):
         print(f"Successfully saved plot to png file : {filename + ".png"}")
     else:
