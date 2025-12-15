@@ -4,13 +4,14 @@
 
 Repository for Course work on **ATU Module 25-26: 8645 -- COMPUTER INFRASTRUCTURE**
 
-Notebook problems.md generated locally on PC (as github codespace had issues loading).    
+Notebook problems.md generated on a GitHub Codespace.    
 Updates pushed to "ngn73" github URL https://github.com/ngn73/8645-computer-infrastructure.git
 
 Assessement Details : https://github.com/ianmcloughlin/computer-infrastructure/blob/main/assessment/problems.md
 
-Rather than having complete assessement with a single Notebook (problems.ipynb), the total assessement is broken into several Notebooks, 
-Updates committed:
+Rather than having complete assessement with a single Notebook (problems.ipynb), the total assessement is broken into several Notebooks (all linked together), 
+Updates committed:  
+  
 |Problem|Notebook|Date Submitted|Link|
 |--------|--------|-----------|-----------|
 |0 |Main Project Notebook|19/10/2025|[Problems NoteBook : Parent Notebook](problems.ipynb)|
