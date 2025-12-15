@@ -36,8 +36,19 @@ jobs:
           pwd
           find . -type f
 
-      # 5. Upload logs, CSVs and images as artifacts
-      #    (modify paths as needed)
+      # 5. Add/Commit/Push archived logs, CSVs and images to Repo
+      - name: Commit generated outputs to repo
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+
+          git add logs/*.log data/*.csv data/archive/*.csv data/plots/*.png || true
+
+          git status
+          git commit -m "Added generated csv/png/log outputs [skip ci]" || echo "Nothing to commit"
+          git push
+
+      # 6. Upload logs, CSVs and images as artifacts
       - name: Upload output artifacts
         uses: actions/upload-artifact@v4
         with:
