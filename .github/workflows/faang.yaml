@@ -45,7 +45,7 @@ jobs:
           git config user.name "github-actions"
           git config user.email "actions@github.com"
 
-          git add logs/*.log data/*.csv data/archive/*.csv data/plots/*.png || true
+          git add -A data logs || true
 
           git status
           git commit -m "Added generated csv/png/log outputs [skip ci]" || echo "Nothing to commit"
