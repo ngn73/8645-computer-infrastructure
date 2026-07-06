@@ -1,0 +1,9 @@
+2026-07-06 16:20:05,550-__main__-DEBUG:Starting FAANG data retrieval process for META, AAPL, AMZN, NFLX, GOOG with interval '1h' over period '5d'.
+2026-07-06 16:20:06,303-__main__-DEBUG:yFinance Data extraction successful.
+2026-07-06 16:20:06,306-__main__-DEBUG:yFinance CSV File 20260706-162005.csv generated in Staging folder.
+2026-07-06 16:20:06,306-__main__-DEBUG:Archived: 20260705-144219.csv to ./data/archive/20260705-144219.csv
+2026-07-06 16:20:06,306-__main__-DEBUG:yFinance CSV File 20260706-162005.csv moved to data folder.
+2026-07-06 16:20:06,306-__main__-DEBUG:FAANG data retrieval process completed.
+2026-07-06 16:20:06,309-__main__-DEBUG:Successfully read the CSV file ./data/20260706-162005.csv
+2026-07-06 16:20:06,376-__main__-DEBUG:Plot generated from CSV file.
+2026-07-06 16:20:06,748-__main__-INFO:Plot saved to file ./data/plots/20260706-162005.png
