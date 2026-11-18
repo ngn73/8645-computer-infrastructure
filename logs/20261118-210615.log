@@ -1,0 +1,9 @@
+2026-11-18 21:06:15,222-__main__-DEBUG:Starting FAANG data retrieval process for META, AAPL, AMZN, NFLX, GOOG with interval '1h' over period '5d'.
+2026-11-18 21:06:15,634-yfinance-ERROR:
+1 Failed download:
+2026-11-18 21:06:15,634-yfinance-ERROR:['AMZN']: OperationalError('database is locked')
+2026-11-18 21:06:15,637-__main__-ERROR:Validation Error: Downloaded data contains NaN values.
+2026-11-18 21:06:15,638-__main__-DEBUG:FAANG data retrieval process completed.
+2026-11-18 21:06:15,640-__main__-DEBUG:Successfully read the CSV file ./data/20261117-213036.csv
+2026-11-18 21:06:15,699-__main__-DEBUG:Plot generated from CSV file.
+2026-11-18 21:06:16,054-__main__-INFO:Plot saved to file ./data/plots/20261117-213036.png
